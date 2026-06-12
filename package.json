@@ -1,0 +1,36 @@
+{
+  "name": "trust-center",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "debug": "^4.4.3",
+    "dotenv": "^16.5.0",
+    "express": "^4.22.2",
+    "http-errors": "^2.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.11.0",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.10",
+    "pug": "^3.0.4",
+    "sequelize": "^6.37.7"
+  },
+  "main": "app.js",
+  "keywords": [
+    "trust-center",
+    "kyc",
+    "oauth",
+    "identity-verification"
+  ],
+  "author": "Miaoji Lab",
+  "license": "Apache-2.0",
+  "description": "OAuth-based trust and KYC verification center",
+  "overrides": {
+    "uuid": "11.1.1"
+  }
+}

@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+
+/**
+ * 加载环境变量
+ */
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// 获取并显示所有可用的API密钥 - 处理每个密钥，去除空格
+if (process.env.API_KEYS) {
+  process.env.API_KEYS = process.env.API_KEYS.split(',')
+    .map(key => key.trim())
+    .join(',');
+}
+
+if (process.env.API_KEY) {
+  process.env.API_KEY = process.env.API_KEY.trim();
+}
+
+// 获取有效的API密钥列表
+const validApiKeys = process.env.API_KEYS ? process.env.API_KEYS.split(',') : [];
+if (process.env.API_KEY && !validApiKeys.includes(process.env.API_KEY)) {
+  validApiKeys.push(process.env.API_KEY);
+}
+
+console.log('可用的API密钥数量:', validApiKeys.length);
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('kyc-center:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

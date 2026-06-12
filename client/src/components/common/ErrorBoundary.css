@@ -1,0 +1,122 @@
+/* 错误边界容器 */
+.error-boundary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 错误内容区域 */
+.error-content {
+  max-width: 500px;
+}
+
+/* 错误标题 */
+.error-content h3 {
+  color: #e74c3c;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* 错误描述 */
+.error-content p {
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* 重试按钮 */
+.retry-button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  margin: 0 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.retry-button:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.retry-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .error-boundary {
+    min-height: 300px;
+    padding: 16px;
+  }
+  
+  .error-content h3 {
+    font-size: 20px;
+  }
+  
+  .error-content p {
+    font-size: 14px;
+  }
+  
+  .retry-button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 14px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-boundary {
+    min-height: 250px;
+    padding: 12px;
+  }
+  
+  .error-content {
+    max-width: 100%;
+  }
+  
+  .error-content h3 {
+    font-size: 18px;
+  }
+  
+  .error-content p {
+    font-size: 13px;
+  }
+}
+
+/* 深色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .error-boundary {
+    background-color: #1a1a1a;
+  }
+  
+  .error-content h3 {
+    color: #ff6b6b;
+  }
+  
+  .error-content p {
+    color: #ccc;
+  }
+  
+  .retry-button {
+    background: #4a90e2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .retry-button:hover {
+    background: #357abd;
+  }
+}
