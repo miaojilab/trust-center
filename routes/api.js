@@ -25,6 +25,7 @@ router.post('/admin/kyc/review/:submissionId/approve', verifyToken, verifyAdmin,
 router.post('/admin/kyc/review/:submissionId/reject', verifyToken, verifyAdmin, kycController.rejectSubmission);
 router.post('/admin/kyc/schemes', verifyToken, verifyAdmin, kycController.createScheme);
 router.get('/admin/dashboard/stats', verifyToken, verifyAdmin, kycController.getDashboardStats);
+router.get('/admin/users', verifyToken, verifyAdmin, kycController.getAdminUsers);
 router.get('/admin/kyc/schemes', verifyToken, verifyAdmin, kycController.getAdminSchemes);
 router.get('/admin/kyc/schemes/:id', verifyToken, verifyAdmin, kycController.getSchemeById);
 router.put('/admin/kyc/schemes/:id', verifyToken, verifyAdmin, kycController.updateScheme);

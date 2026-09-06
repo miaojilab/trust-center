@@ -1,4 +1,4 @@
-const { User, KYCScheme, KYCSubmission } = require('../models');
+const { User, KYCScheme, KYCSubmission, ReviewLog } = require('../models');
 const { Op } = require('sequelize');
 
 // 简单的内存缓存，用于缓存方案列表
@@ -18,6 +18,44 @@ const ALL_SCHEMES_CACHE_DURATION = 10 * 60 * 1000; // 10分钟缓存
 // 清除单个用户的KYC状态缓存
 const clearUserStatusCache = (userId) => {
   userStatusCache.delete(userId);
+};
+
+// 记录审核历史
+const addReviewLog = async ({ submissionId, userId, reviewerId, action, status, reason }) => {
+  try {
+    await ReviewLog.create({ submissionId, userId: userId || null, reviewerId: reviewerId || null, action, status, reason: reason || null });
+  } catch (error) { console.error('记录审核历史失败:', error.message); }
+};
+
+// 将提交数据中的内部字段名映射为字段标签
+const mapSubmissionDataToLabels = (submission) => {
+  const fields = (submission.KYCScheme && submission.KYCScheme.fields) || [];
+  const labelMap = {};
+  fields.forEach(f => { if (f.name) { labelMap[f.name] = f.label || f.name; } });
+  const mapped = {};
+  Object.keys(submission.data || {}).forEach(key => { mapped[labelMap[key] || key] = submission.data[key]; });
+  return mapped;
+};
+
+// 读取某条提交的审核历史（按时间正序）
+const loadSubmissionHistory = async (submissionId) => {
+  try {
+    const logs = await ReviewLog.findAll({
+      where: { submissionId },
+      include: [{ model: User, as: 'Reviewer', attributes: ['id', 'username'] }],
+      attributes: ['id', 'status', 'reviewerId', 'reason', 'action', 'createdAt'],
+      order: [['createdAt', 'ASC'], ['id', 'ASC']]
+    });
+    return logs.map(log => ({
+      id: String(log.id),
+      status: log.status,
+      reviewerId: log.reviewerId,
+      reviewerName: log.Reviewer ? log.Reviewer.username : undefined,
+      reason: log.reason || undefined,
+      action: log.action,
+      createdAt: log.createdAt
+    }));
+  } catch (error) { console.error('读取审核历史失败:', error.message); return []; }
 };
 
 // 清除全部方案缓存
@@ -208,7 +246,23 @@ const submitKYC = async (req, res) => {
       existingSubmission.rejectReason = null;
       existingSubmission.reviewerId = null;
       existingSubmission.reviewedAt = null;
-      await existingSubmission.save();
+      // 重新提交：刷新提交时间（createdAt 需通过静态 Model.update 写库）
+      await KYCSubmission.update(
+        {
+          data,
+          status: 'pending',
+          rejectReason: null,
+          reviewerId: null,
+          reviewedAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        { where: { id: existingSubmission.id } }
+      );
+      existingSubmission.updatedAt = new Date();
+
+      // 记录重新提交历史
+      await addReviewLog({ submissionId: existingSubmission.id, userId, action: 'resubmit', status: 'pending' });
       
       // 清除该用户的KYC状态缓存
       clearUserStatusCache(userId);
@@ -231,6 +285,8 @@ const submitKYC = async (req, res) => {
       data,
       status: 'pending'
     });
+
+    await addReviewLog({ submissionId: submission.id, userId, action: 'submit', status: 'pending' });
     
     // 清除该用户的KYC状态缓存
     clearUserStatusCache(userId);
@@ -393,7 +449,7 @@ const getPendingSubmissions = async (req, res) => {
       KYCSubmission.findAll({
         where: whereCondition,
         include: includeConfig,
-        attributes: ['id', 'status', 'createdAt', 'updatedAt'],
+        attributes: ['id', 'status', 'data', 'createdAt', 'updatedAt'],
         order: [['createdAt', 'ASC']],
         offset: actualOffset,
         limit: actualLimit
@@ -463,8 +519,7 @@ const reviewSubmission = async (req, res) => {
     // 清除该用户的KYC状态缓存
     clearUserStatusCache(submission.userId);
     
-    // 添加审核历史记录（如果有相关模型）
-    // 如果需要，可以在此处添加历史记录代码
+    await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: status === 'approved' ? 'approve' : 'reject', status, reason: status === 'rejected' ? rejectReason : undefined });
     
     return res.status(200).json({
       success: true,
@@ -718,7 +773,7 @@ const getVerificationDetails = async (req, res) => {
           id: submission.schemeId,
           name: submission.KYCScheme.name
         },
-        verificationData: submission.data,
+        verificationData: mapSubmissionDataToLabels(submission),
         verifiedAt: submission.reviewedAt
       }
     });
@@ -985,9 +1040,12 @@ const getSubmissionDetails = async (req, res) => {
       });
     }
 
+    const detailData = submission.toJSON();
+    detailData.history = await loadSubmissionHistory(submission.id);
+
     return res.status(200).json({
       success: true,
-      data: submission
+      data: detailData
     });
   } catch (error) {
     console.error('获取提交记录详情失败:', error);
@@ -1034,9 +1092,12 @@ const getAdminSubmissionDetails = async (req, res) => {
       });
     }
 
+    const detailData = submission.toJSON();
+    detailData.history = await loadSubmissionHistory(submission.id);
+
     return res.status(200).json({
       success: true,
-      data: submission
+      data: detailData
     });
   } catch (error) {
     console.error('获取提交记录详情失败:', error);
@@ -1077,8 +1138,7 @@ const approveSubmission = async (req, res) => {
     // 清除该用户的KYC状态缓存
     clearUserStatusCache(submission.userId);
     
-    // 添加审核历史记录（如果有相关模型）
-    // 如果需要，可以在此处添加历史记录代码
+    await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: 'approve', status: 'approved' });
     
     return res.status(200).json({
       success: true,
@@ -1137,8 +1197,7 @@ const rejectSubmission = async (req, res) => {
     // 清除该用户的KYC状态缓存
     clearUserStatusCache(submission.userId);
     
-    // 添加审核历史记录（如果有相关模型）
-    // 如果需要，可以在此处添加历史记录代码
+    await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: 'reject', status: 'rejected', reason });
     
     return res.status(200).json({
       success: true,
@@ -1160,7 +1219,32 @@ const rejectSubmission = async (req, res) => {
   }
 };
 
+
+// 管理员：分页查询所有用户（含未提交过认证的用户）
+const getAdminUsers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 0;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const search = (req.query.search || '').trim();
+    const where = {};
+    if (search) {
+      where[Op.or] = [
+        { username: { [Op.like]: `%${search}%` } },
+        { email: { [Op.like]: `%${search}%` } },
+        { oauthId: { [Op.like]: `%${search}%` } }
+      ];
+    }
+    const [total, items] = await Promise.all([
+      User.count({ where }),
+      User.findAll({ where, attributes: ['id', 'oauthId', 'username', 'email', 'avatar', 'isAdmin', 'status', 'createdAt', 'lastLogin'], order: [['createdAt', 'DESC']], offset: page * limit, limit })
+    ]);
+    return res.status(200).json({ success: true, data: { items, total, page, limit } });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: '获取用户列表失败', error: error.message });
+  }
+};
 module.exports = {
+  getAdminUsers,
   getAllSchemes,
   getSchemeById,
   submitKYC,
