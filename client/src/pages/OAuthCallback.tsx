@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Alert, Container, Paper, alpha, useTheme } from '@mui/material';
 import { extractAuthCodeFromQuery, validateState } from '../utils/oauth';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,7 +18,6 @@ const OAuthCallback: React.FC = () => {
   const [, setLoading] = useState<boolean>(true);
   const [logoLoaded, setLogoLoaded] = useState<boolean>(false);
   const [processingTime, setProcessingTime] = useState<number>(0);
-  const navigate = useNavigate();
   const { login } = useAuth();
   const theme = useTheme();
 
@@ -67,8 +65,8 @@ const OAuthCallback: React.FC = () => {
         const success = await login(code, codeVerifier || undefined);
         
         if (success) {
-          // 登录成功，重定向到首页
-          navigate('/');
+          // 登录成功，整页跳转到首页（避免 SPA 切换瞬间的提交竞态/错误兜底闪现）
+          window.location.href = '/';
         } else {
           setError('登录失败，请稍后重试');
           setLoading(false);
@@ -87,7 +85,7 @@ const OAuthCallback: React.FC = () => {
     return () => {
       clearInterval(timer);
     };
-  }, [login, navigate]);
+  }, [login]);
 
   // 只有在加载时间超过30秒且有错误时才显示错误（前端回调超时阈值）
   // 出现错误时立即展示，无需等待超时
