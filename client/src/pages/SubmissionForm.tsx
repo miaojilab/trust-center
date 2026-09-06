@@ -1,33 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-  Alert,
-  CircularProgress,
-  Divider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Snackbar
-} from '@mui/material';
-import {
-  ArrowBack as BackIcon,
-  Save as SaveIcon,
-  Send as SendIcon
-} from '@mui/icons-material';
+import { Box, Typography, Paper, Button, Stepper, Step, StepLabel, Alert, CircularProgress, Divider, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { ArrowBack as BackIcon, Save as SaveIcon, Send as SendIcon } from '@mui/icons-material';
 import { kycAPI } from '../services/api';
 import { KYCScheme, KYCField } from '../types';
 import KYCFormField from '../components/forms/KYCFormField';
 import MainLayout from '../components/layout/MainLayout';
-import { FileData, FieldValue } from '../components/forms/KYCFormField';
+import { FieldValue } from '../components/forms/KYCFormField';
 
 const SubmissionForm: React.FC = () => {
   const { schemeId } = useParams<{ schemeId: string }>();

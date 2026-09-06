@@ -2,6 +2,13 @@ const { sequelize } = require('../config/database');
 const User = require('./User');
 const KYCScheme = require('./KYCScheme');
 const KYCSubmission = require('./KYCSubmission');
+const ReviewLog = require('./ReviewLog');
+
+// 审核历史关联
+KYCSubmission.hasMany(ReviewLog, { foreignKey: 'submissionId', as: 'reviewLogs' });
+ReviewLog.belongsTo(KYCSubmission, { foreignKey: 'submissionId' });
+ReviewLog.belongsTo(User, { foreignKey: 'reviewerId', as: 'Reviewer' });
+ReviewLog.belongsTo(User, { foreignKey: 'userId', as: 'Submitter' });
 
 const syncDatabase = async (force = false) => {
   try {
@@ -17,5 +24,6 @@ module.exports = {
   User,
   KYCScheme,
   KYCSubmission,
+  ReviewLog,
   syncDatabase
-}; 
+};

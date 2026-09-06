@@ -1,33 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Paper,
-  Stack,
-  CircularProgress,
-  Divider,
-  Card,
-  CardContent,
-  CardActionArea,
-  Grid
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  History as HistoryIcon,
-  PeopleOutline as UsersIcon,
-  DescriptionOutlined as SchemeIcon,
-  AssignmentOutlined as SubmissionIcon,
-  CheckCircleOutline as ApprovedIcon,
-  ErrorOutline as RejectedIcon,
-  HourglassEmpty as PendingIcon,
-  PendingActions as PendingActionsIcon,
-  VerifiedUser as VerifiedIcon,
-  Cancel as CancelIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
-import { kycAPI, adminAPI } from '../../services/api';
-import { KYCSubmission } from '../../types';
+import { Box, Typography, Paper, Stack, CircularProgress, Divider, Card, CardContent, CardActionArea, Grid } from '@mui/material';
+import { PeopleOutline as UsersIcon, DescriptionOutlined as SchemeIcon, AssignmentOutlined as SubmissionIcon, CheckCircleOutline as ApprovedIcon, ErrorOutline as RejectedIcon, HourglassEmpty as PendingIcon, PendingActions as PendingActionsIcon, VerifiedUser as VerifiedIcon, Search as SearchIcon } from '@mui/icons-material';
+import { adminAPI } from '../../services/api';
 import MainLayout from '../../components/layout/MainLayout';
 
 interface DashboardStat {
@@ -130,10 +105,6 @@ const AdminDashboard: React.FC = () => {
     navigate('/admin/schemes');
   };
 
-  // 查看审核历史
-  const handleViewHistory = () => {
-    navigate('/admin/history');
-  };
   
   // 认证查询
   const handleQueryVerifications = () => {

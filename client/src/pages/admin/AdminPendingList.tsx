@@ -1,65 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Button,
-  Chip,
-  IconButton,
-  TextField,
-  InputAdornment,
-  CircularProgress,
-  Alert,
-  Tooltip,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  Card,
-  CardContent,
-  Stack,
-  Grid
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Visibility as ViewIcon,
-  FilterList as FilterIcon,
-  Clear as ClearIcon,
-  CalendarToday as CalendarIcon,
-  Refresh as RefreshIcon,
-  PendingActions as PendingIcon
-} from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Button, IconButton, TextField, InputAdornment, CircularProgress, Alert, Tooltip, Card, CardContent, Stack } from '@mui/material';
+import { Search as SearchIcon, Refresh as RefreshIcon, PendingActions as PendingIcon, Visibility as ViewIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
 import MainLayout from '../../components/layout/MainLayout';
 import { adminAPI } from '../../services/api';
 import { KYCSubmission } from '../../types';
 
-// 状态颜色映射
-const statusColors: Record<string, string> = {
-  pending: 'warning',
-  approved: 'success',
-  rejected: 'error'
-};
 
-// 状态标签映射
-const statusLabels: Record<string, string> = {
-  pending: '待审核',
-  approved: '已通过',
-  rejected: '已拒绝'
-};
 
 const AdminPendingList: React.FC = () => {
   const navigate = useNavigate();
@@ -78,13 +26,11 @@ const AdminPendingList: React.FC = () => {
   
   // 筛选状态
   const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [status] = useState<string | null>(null);
+  const [startDate] = useState<Date | null>(null);
+  const [endDate] = useState<Date | null>(null);
   
   // 筛选菜单
-  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
-  const filterMenuOpen = Boolean(filterAnchorEl);
   
   // 刷新状态
   const [refreshing, setRefreshing] = useState(false);
@@ -162,31 +108,9 @@ const AdminPendingList: React.FC = () => {
     }
   };
   
-  // 打开筛选菜单
-  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
-    setFilterAnchorEl(event.currentTarget);
-  };
   
-  // 关闭筛选菜单
-  const handleFilterClose = () => {
-    setFilterAnchorEl(null);
-  };
   
-  // 应用状态筛选
-  const handleStatusFilter = (statusValue: string | null) => {
-    setStatus(statusValue);
-    setPage(0);
-    handleFilterClose();
-  };
   
-  // 清除所有筛选
-  const handleClearFilters = () => {
-    setStatus(null);
-    setStartDate(null);
-    setEndDate(null);
-    setPage(0);
-    handleFilterClose();
-  };
   
   // 查看详情
   const handleViewSubmission = (submissionId: string) => {

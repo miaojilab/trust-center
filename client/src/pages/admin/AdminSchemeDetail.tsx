@@ -1,28 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Divider,
-  Alert,
-  CircularProgress,
-  Card,
-  CardContent,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton
-} from '@mui/material';
-import {
-  ArrowBack as BackIcon,
-  Edit as EditIcon
-} from '@mui/icons-material';
+import { Box, Typography, Paper, Button, Divider, Alert, CircularProgress, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { adminAPI } from '../../services/api';
 import MainLayout from '../../components/layout/MainLayout';
 import { KYCScheme } from '../../types';

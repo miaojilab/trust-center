@@ -1,44 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Paper,
-  Typography,
-  Grid,
-  Button,
-  Divider,
-  CircularProgress,
-  Alert,
-  Chip,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
-  Card,
-  CardContent,
-  CardActions,
-  Stack,
-} from '@mui/material';
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
-} from '@mui/lab';
-import {
-  CheckCircle as CheckIcon,
-  Cancel as CancelIcon,
-  Pending as PendingIcon,
-  AccessTime as TimeIcon,
-  Home as HomeIcon,
-  Refresh as RefreshIcon,
-  ArrowBack as BackIcon,
-  Description as DescriptionIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { Box, Paper, Typography, Grid, Button, Divider, CircularProgress, Alert, Chip, Card, CardContent, CardActions, Stack } from '@mui/material';
+import { CheckCircle as CheckIcon, Pending as PendingIcon, Home as HomeIcon, Refresh as RefreshIcon, Cancel as CancelIcon, Add as AddIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import MainLayout from '../components/layout/MainLayout';
 import { userAPI, kycAPI } from '../services/api';
@@ -59,8 +22,6 @@ const statusColors: Record<string, 'success' | 'warning' | 'error' | 'default'> 
   default: 'default'
 };
 
-// 类型定义：MUI TimelineDot支持的颜色类型
-type TimelineDotColor = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | 'grey' | undefined;
 
 // 状态标签映射
 const statusLabels: Record<string, string> = {

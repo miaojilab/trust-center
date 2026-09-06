@@ -1,41 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  Card,
-  CardContent,
-  Tab,
-  Tabs,
-  useTheme,
-  TextField,
-  Button,
-  Alert,
-  CircularProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
-} from '@mui/material';
-import {
-  Api as ApiIcon,
-  Security as SecurityIcon,
-  Info as InfoIcon,
-  ExpandMore as ExpandMoreIcon,
-  Send as SendIcon,
-  PlayArrow as TestIcon
-} from '@mui/icons-material';
+import { Box, Typography, Paper, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Card, CardContent, useTheme, TextField, Button, Alert, CircularProgress, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Api as ApiIcon, Security as SecurityIcon, Info as InfoIcon, ExpandMore as ExpandMoreIcon, Send as SendIcon, PlayArrow as TestIcon } from '@mui/icons-material';
 import MainLayout from '../../components/layout/MainLayout';
 import axios, { AxiosError } from 'axios';
 
@@ -69,15 +34,11 @@ interface TestResponse {
 
 const ApiDocumentation: React.FC = () => {
   const theme = useTheme();
-  const [activeTab, setActiveTab] = React.useState(0);
   const [baseUrl, setBaseUrl] = useState<string>('https://your-api-domain.com');
   const [testResults, setTestResults] = useState<Record<string, TestResponse | null>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [paramValues, setParamValues] = useState<Record<string, Record<string, string>>>({});
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
 
   const handleBaseUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBaseUrl(event.target.value);

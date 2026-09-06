@@ -17,7 +17,6 @@ import {
   PersonOutline as PersonIcon,
   CheckCircleOutline as VerifiedIcon,
   PendingOutlined as PendingIcon,
-  ErrorOutline as ErrorIcon,
   InfoOutlined as InfoIcon,
   EditOutlined as EditIcon,
   AddOutlined as AddIcon
@@ -76,19 +75,6 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  // 获取认证状态芯片
-  const getStatusChip = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <Chip icon={<VerifiedIcon />} label="已认证" color="success" size="small" />;
-      case 'pending':
-        return <Chip icon={<PendingIcon />} label="待审核" color="warning" size="small" />;
-      case 'rejected':
-        return <Chip icon={<ErrorIcon />} label="未通过" color="error" size="small" />;
-      default:
-        return <Chip label="未提交" size="small" />;
-    }
-  };
 
   // 查找认证状态
   const getSubmissionStatus = (schemeId: number) => {

@@ -64,9 +64,9 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  // OAuth回调处理
-  handleCallback: (accessToken: string): Promise<ApiResponse<{ token: string; user: User }>> => 
-    api.post('/auth/callback', { access_token: accessToken }).then(res => res.data),
+  // OAuth回调处理（授权码模式）
+  handleCallback: (code: string, codeVerifier?: string): Promise<ApiResponse<{ token: string; user: User }>> => 
+    api.post('/auth/callback', { code, ...(codeVerifier ? { code_verifier: codeVerifier } : {}) }).then(res => res.data),
   
   // 获取当前用户信息
   getCurrentUser: (): Promise<ApiResponse<User>> => 
@@ -199,24 +199,14 @@ export const adminAPI = {
       };
     }),
     
-  // 获取所有用户
-  getAllUsers: (): Promise<ApiResponse<User[]>> =>
-    api.get('/admin/kyc/pending', { params: { limit: 100, status: '' } }).then(res => res.data)
-    .then(response => {
-      // 从提交记录中提取不重复的用户信息
-      const submissionsWithUsers = response.data?.items || [];
-      const userMap = new Map();
-      submissionsWithUsers.forEach((submission: KYCSubmission) => {
-        if (submission.User && !userMap.has(submission.User.id)) {
-          userMap.set(submission.User.id, submission.User);
-        }
-      });
-      return {
-        success: response.success,
-        message: response.message,
-        data: Array.from(userMap.values())
-      };
-    })
+  // 获取所有用户（真实用户表分页查询，含未提交过认证的用户）
+  getAllUsers: (params?: { search?: string; page?: number; limit?: number }): Promise<ApiResponse<User[]>> =>
+    api.get('/admin/users', { params: { page: 0, limit: 200, ...params } }).then(res => res.data)
+    .then(response => ({
+      success: response.success,
+      message: response.message,
+      data: response.data?.items || []
+    }))
 };
 
 // 用户API

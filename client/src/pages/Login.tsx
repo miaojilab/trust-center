@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Button, 
-  Typography, 
-  Paper, 
-  Container,
-  useTheme,
-  alpha,
-  Stack,
-  CircularProgress
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { getAuthorizationUrl } from '../utils/oauth';
+import React, { useState } from 'react';
+import { Box, Button, Typography, Container, useTheme, alpha, Stack, CircularProgress } from '@mui/material';
+import { getAuthorizationUrl, generatePkceChallenge } from '../utils/oauth';
 import { keyframes } from '@mui/system';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import SecurityShieldCanvas from '../components/SecurityShieldCanvas';
 
 // 定义动画
@@ -29,11 +17,6 @@ const pulse = keyframes`
   100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
 `;
 
-const float = keyframes`
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-`;
 
 // 添加缩放呼吸动画
 const breathe = keyframes`
@@ -43,12 +26,10 @@ const breathe = keyframes`
 `;
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const [logoLoaded, setLogoLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  const handleOAuthLogin = () => {
+  const handleOAuthLogin = async () => {
     // 设置加载状态
     setLoading(true);
     
@@ -58,8 +39,14 @@ const Login: React.FC = () => {
     // 保存state到本地存储，以便回调时验证
     localStorage.setItem('oauth_state', state);
     
+        // 生成 PKCE code_verifier / code_challenge（S256）
+    const { verifier, challenge } = await generatePkceChallenge();
+
+    // 保存 code_verifier，回调时用于换取访问令牌
+    localStorage.setItem('oauth_code_verifier', verifier);
+
     // 获取OAuth授权URL
-    const authUrl = getAuthorizationUrl(state);
+    const authUrl = getAuthorizationUrl(state, challenge);
     
     // 添加短暂延迟，让用户看到加载状态
     setTimeout(() => {

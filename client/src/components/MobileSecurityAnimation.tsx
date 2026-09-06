@@ -105,7 +105,6 @@ const MobileSecurityAnimation: React.FC<MobileSecurityAnimationProps> = ({
     // 锁的尺寸和位置
     const lockWidth = size * 0.7;
     const lockHeight = size * 0.8;
-    const lockX = centerX - lockWidth / 2;
     const lockY = centerY - lockHeight / 2 - size * 0.05; // 稍微上移一点
     
     // 绘制锁的拱形顶部

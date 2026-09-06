@@ -126,6 +126,6 @@ export interface AuthContextType {
   isAdmin: boolean;
   user: User | null;
   loading: boolean;
-  login: (accessToken: string) => Promise<boolean>;
+  login: (code: string, codeVerifier?: string) => Promise<boolean>;
   logout: () => void;
 } 

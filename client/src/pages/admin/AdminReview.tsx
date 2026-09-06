@@ -1,45 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Divider,
-  Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  Tabs,
-  Tab,
-  Alert,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-  Stack,
-  Chip,
-  Avatar,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import {
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  ArrowBack as BackIcon,
-  Person as PersonIcon,
-  Description as FormIcon,
-  History as HistoryIcon,
-  Visibility as ViewIcon,
-  InsertDriveFile as FileIcon,
-} from '@mui/icons-material';
+import { Box, Typography, Button, Paper, Divider, Grid, Card, CardContent, Tabs, Tab, Alert, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Stack, Chip, Avatar, IconButton } from '@mui/material';
+import { CheckCircle as ApproveIcon, Cancel as RejectIcon, Description as FormIcon, InsertDriveFile as FileIcon, ArrowBack as BackIcon, Person as PersonIcon, History as HistoryIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import MainLayout from '../../components/layout/MainLayout';
 import { adminAPI } from '../../services/api';
-import { KYCSubmission, KYCFieldValue } from '../../types';
+import { KYCSubmission } from '../../types';
 
 // 管理员审核页面
 const AdminReview: React.FC = () => {

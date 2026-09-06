@@ -97,7 +97,6 @@ const SecurityShieldCanvas: React.FC<SecurityShieldCanvasProps> = ({
     // 锁的主体
     const lockWidth = size * 0.7;
     const lockHeight = size * 0.8;
-    const lockX = centerX - lockWidth / 2;
     const lockY = centerY - lockHeight / 2 + size * 0.05;
 
     // 锁的弧度

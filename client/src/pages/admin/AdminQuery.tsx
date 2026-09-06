@@ -1,48 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tab,
-  Tabs,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  Alert,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  DialogContentText,
-  Stack,
-  Tooltip,
-  Snackbar
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Person as PersonIcon,
-  VerifiedUser as VerifiedUserIcon,
-  Visibility as VisibilityIcon,
-  Close as CloseIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon
-} from '@mui/icons-material';
+import { Box, Typography, Paper, TextField, Button, FormControl, InputLabel, Select, MenuItem, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Alert, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, List, ListItem, ListItemText, DialogContentText, Stack, Tooltip, Snackbar } from '@mui/material';
+import { Search as SearchIcon, Person as PersonIcon, VerifiedUser as VerifiedUserIcon, Visibility as VisibilityIcon, Close as CloseIcon, CheckCircle as ApproveIcon, Cancel as RejectIcon } from '@mui/icons-material';
 import { adminAPI } from '../../services/api';
 import { KYCSubmission, KYCScheme, User } from '../../types';
 import MainLayout from '../../components/layout/MainLayout';
@@ -316,18 +274,6 @@ const AdminQuery: React.FC = () => {
     );
   };
 
-  // 刷新当前查询
-  const refreshCurrentQuery = () => {
-    if (tabValue === 0 && schemeId) {
-      handleQueryByScheme();
-    } else if (tabValue === 1) {
-      if (userId || username || email) {
-        handleQueryByUser();
-      } else if (users.length > 0) {
-        handleQueryAllUsers();
-      }
-    }
-  };
 
   // 打开状态修改确认对话框
   const handleStatusChangeClick = (status: 'approved' | 'rejected') => {

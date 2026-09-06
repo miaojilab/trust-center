@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const { getUserInfo } = require('../config/oauth');
+const { getUserInfo, exchangeCodeForToken } = require('../config/oauth');
 
 // 用户信息缓存 - 使用 Map 存储每个用户的缓存
 const userCache = new Map();
@@ -13,20 +13,35 @@ const clearUserCache = (userId) => {
 
 // OAuth登录回调处理
 const handleOAuthCallback = async (req, res) => {
-  const { access_token } = req.body;
+  const { code, access_token, redirect_uri, code_verifier } = req.body;
   
-  console.log('Received callback with token:', access_token ? '(有token)' : '(无token)');
+  console.log('Received OAuth callback:', code ? '(有code)' : (access_token ? '(有token)' : '(无凭证)'));
   
-  if (!access_token) {
+  if (!code && !access_token) {
     return res.status(400).json({
       success: false,
-      message: '缺少访问令牌'
+      message: '缺少授权码或访问令牌'
     });
   }
   
   try {
     // 从OAuth服务获取用户信息
-    const result = await getUserInfo(access_token);
+    let accessToken = access_token;
+    if (code) {
+      try {
+        accessToken = await exchangeCodeForToken(code, redirect_uri, code_verifier);
+      } catch (exchangeError) {
+        console.error('Token exchange error:', exchangeError.message);
+        return res.status(401).json({
+          success: false,
+          message: exchangeError.response?.data?.message || exchangeError.message || '授权码无效或已过期',
+          error: exchangeError.response?.data || exchangeError.responseData || exchangeError.message
+        });
+      }
+    }
+
+    // 从OAuth服务获取用户信息
+    const result = await getUserInfo(accessToken);
     
     console.log('OAuth result:', result.success ? 'Success' : 'Failed');
     
@@ -40,6 +55,7 @@ const handleOAuthCallback = async (req, res) => {
     
     const oauthUser = result.user;
     console.log('User info retrieved:', oauthUser.id, oauthUser.username);
+    if (!oauthUser.username) { oauthUser.username = '用户' + String(oauthUser.id).slice(-8); }
     
     // 检查用户是否已存在
     let user = await User.findOne({ where: { oauthId: oauthUser.id.toString() } });

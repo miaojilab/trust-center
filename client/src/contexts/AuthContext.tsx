@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback, ReactNode } from 'react';
 import { User, AuthContextType } from '../types';
 import { authAPI } from '../services/api';
 
@@ -47,10 +47,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   // 登录方法
-  const login = async (accessToken: string): Promise<boolean> => {
+  const login = useCallback(async (code: string, codeVerifier?: string): Promise<boolean> => {
     setLoading(true);
     try {
-      const response = await authAPI.handleCallback(accessToken);
+      const response = await authAPI.handleCallback(code, codeVerifier);
       
       if (response.success && response.data) {
         const { token, user } = response.data;
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
       return false;
     }
-  };
+  }, []);
 
   // 登出方法
   const logout = () => {

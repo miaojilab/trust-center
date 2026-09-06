@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Alert, Container, Paper, alpha, useTheme } from '@mui/material';
-import { extractTokenFromHash, validateState } from '../utils/oauth';
+import { extractAuthCodeFromQuery, validateState } from '../utils/oauth';
 import { useAuth } from '../contexts/AuthContext';
 import { keyframes } from '@mui/system';
 
@@ -12,9 +12,11 @@ const breatheAnimation = keyframes`
   100% { transform: scale(1); }
 `;
 
+let oauthCallbackStarted = false; // 防止 StrictMode 重复执行导致二次消费 oauth_state
+
 const OAuthCallback: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setLoading] = useState<boolean>(true);
   const [logoLoaded, setLogoLoaded] = useState<boolean>(false);
   const [processingTime, setProcessingTime] = useState<number>(0);
   const navigate = useNavigate();
@@ -28,34 +30,41 @@ const OAuthCallback: React.FC = () => {
     }, 1000);
 
     const processOAuthCallback = async () => {
+      // 防止 StrictMode/重复执行导致 oauth_state 被二次消费而误报“状态验证失败”
+      if (oauthCallbackStarted) { return; }
+      oauthCallbackStarted = true;
       try {
         // 添加延迟，给足够时间显示加载动画
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // 从URL hash中提取令牌信息
-        const tokenInfo = extractTokenFromHash();
-        
-        if (!tokenInfo) {
-          setError('无法提取访问令牌');
+                // 从URL query中提取授权码
+        const { code, state, error, errorDescription } = extractAuthCodeFromQuery();
+
+        if (error) {
+          setError(`授权失败: ${error}${errorDescription ? `：${errorDescription}` : ''}`);
           setLoading(false);
           return;
         }
-        
-        if (tokenInfo.error) {
-          setError(`授权失败: ${tokenInfo.error}`);
+
+        if (!code) {
+          setError('无法提取授权码');
           setLoading(false);
           return;
         }
-        
+
         // 验证状态值
-        if (!validateState(tokenInfo.state)) {
+        if (!validateState(state)) {
           setError('状态验证失败，可能存在安全风险');
           setLoading(false);
           return;
         }
-        
-        // 使用访问令牌登录
-        const success = await login(tokenInfo.accessToken);
+
+                // 读取并清除 PKCE code_verifier
+        const codeVerifier = localStorage.getItem('oauth_code_verifier');
+        localStorage.removeItem('oauth_code_verifier');
+
+        // 使用授权码登录
+        const success = await login(code, codeVerifier || undefined);
         
         if (success) {
           // 登录成功，重定向到首页
@@ -68,6 +77,8 @@ const OAuthCallback: React.FC = () => {
         console.error('OAuth回调处理错误:', err);
         setError('处理授权响应时出错');
         setLoading(false);
+      } finally {
+        oauthCallbackStarted = false;
       }
     };
 
@@ -79,7 +90,8 @@ const OAuthCallback: React.FC = () => {
   }, [login, navigate]);
 
   // 只有在加载时间超过30秒且有错误时才显示错误（前端回调超时阈值）
-  const shouldShowError = error && processingTime > 30;
+  // 出现错误时立即展示，无需等待超时
+  const shouldShowError = !!error;
 
   return (
     <Box

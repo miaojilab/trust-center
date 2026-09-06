@@ -1,35 +1,7 @@
 import React, { useState, ReactNode, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
-import {
-  Box,
-  CssBaseline,
-  AppBar as MuiAppBar,
-  Toolbar,
-  Typography,
-  Drawer as MuiDrawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  Divider,
-  Avatar,
-  useMediaQuery
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Dashboard as DashboardIcon,
-  Person as PersonIcon,
-  VerifiedUser as VerifiedUserIcon,
-  AssignmentTurnedIn as AssignmentTurnedInIcon,
-  AdminPanelSettings as AdminIcon,
-  Logout as LogoutIcon,
-  Security as SecurityIcon,
-  Assignment as AssignmentIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Box, CssBaseline, AppBar as MuiAppBar, Toolbar, Typography, Drawer as MuiDrawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Divider, Avatar, useMediaQuery } from '@mui/material';
+import { Menu as MenuIcon, Dashboard as DashboardIcon, VerifiedUser as VerifiedUserIcon, AssignmentTurnedIn as AssignmentTurnedInIcon, AdminPanelSettings as AdminIcon, Logout as LogoutIcon, Security as SecurityIcon, Assignment as AssignmentIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 

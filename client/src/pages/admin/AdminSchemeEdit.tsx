@@ -1,33 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Typography,
-  TextField,
-  Paper,
-  FormControlLabel,
-  Switch,
-  Divider,
-  IconButton,
-  Card,
-  CardContent,
-  Alert,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Grid
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  DragHandle as DragHandleIcon,
-  Save as SaveIcon,
-  ArrowBack as ArrowBackIcon
-} from '@mui/icons-material';
+import { Box, Button, Typography, TextField, Paper, FormControlLabel, Switch, Divider, IconButton, Card, CardContent, Alert, CircularProgress, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon, DragHandle as DragHandleIcon, Save as SaveIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { adminAPI } from '../../services/api';
 import MainLayout from '../../components/layout/MainLayout';
