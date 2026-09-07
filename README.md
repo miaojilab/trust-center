@@ -11,6 +11,7 @@ Trust Center 是一个基于 OAuth 的身份信任与 KYC 认证中心，支持�
 - 用户 KYC 表单提交与状态查询
 - 管理员审核、审批、拒绝与仪表盘统计
 - 外部 API 通过 API Key 查询认证状态与详情
+- 可选的企业微信 / 飞书群机器人通知（新提交、重新提交、通过、拒绝）
 - React + TypeScript 管理/用户前端
 - MySQL + Sequelize 数据持久化
 
@@ -105,6 +106,9 @@ npm start
 - `OAUTH_CLIENT_SECRET`
 - `OAUTH_REDIRECT_URI`
 - `API_KEYS`
+- `WECOM_WEBHOOK_URL`（可选）
+- `FEISHU_WEBHOOK_URL`（可选）
+- `NOTIFY_WEBHOOK_URLS`（可选，逗号分隔多个 webhook）
 
 前端 `client/.env`：
 
@@ -113,7 +117,7 @@ npm start
 - `REACT_APP_OAUTH_AUTHORIZATION_ENDPOINT`
 - `REACT_APP_API_BASE_URL`
 
-不要提交 `.env`、生产数据库密码、OAuth client secret、JWT secret 或 API keys。仓库只保留 `.env.example` 作为占位示例。
+不要提交 `.env`、生产数据库密码、OAuth client secret、JWT secret、API keys 或群机器人 webhook。仓库只保留 `.env.example` 作为占位示例。通知消息仅包含事件类型、提交 ID、方案名和用户名，不包含表单字段内容。
 
 ## API 概览
 

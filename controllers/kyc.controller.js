@@ -1,5 +1,6 @@
 const { User, KYCScheme, KYCSubmission, ReviewLog } = require('../models');
 const { Op } = require('sequelize');
+const { notifyKycEvent } = require('../utils/notify');
 
 // 简单的内存缓存，用于缓存方案列表
 let schemesCache = null;
@@ -266,6 +267,15 @@ const submitKYC = async (req, res) => {
       
       // 清除该用户的KYC状态缓存
       clearUserStatusCache(userId);
+
+      const resubmitUser = await User.findByPk(userId, { attributes: ['username'] });
+      notifyKycEvent({
+        event: '认证重新提交',
+        submissionId: existingSubmission.id,
+        schemeName: scheme.name,
+        username: resubmitUser ? resubmitUser.username : userId,
+        status: 'pending'
+      });
       
       return res.status(200).json({
         success: true,
@@ -290,6 +300,15 @@ const submitKYC = async (req, res) => {
     
     // 清除该用户的KYC状态缓存
     clearUserStatusCache(userId);
+
+    const submitUser = await User.findByPk(userId, { attributes: ['username'] });
+    notifyKycEvent({
+      event: '新认证提交',
+      submissionId: submission.id,
+      schemeName: scheme.name,
+      username: submitUser ? submitUser.username : userId,
+      status: 'pending'
+    });
     
     return res.status(201).json({
       success: true,
@@ -520,6 +539,19 @@ const reviewSubmission = async (req, res) => {
     clearUserStatusCache(submission.userId);
     
     await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: status === 'approved' ? 'approve' : 'reject', status, reason: status === 'rejected' ? rejectReason : undefined });
+
+    const [reviewUser, reviewScheme] = await Promise.all([
+      User.findByPk(submission.userId, { attributes: ['username'] }),
+      KYCScheme.findByPk(submission.schemeId, { attributes: ['name'] })
+    ]);
+    notifyKycEvent({
+      event: status === 'approved' ? '认证已通过' : '认证已拒绝',
+      submissionId: submission.id,
+      schemeName: reviewScheme ? reviewScheme.name : submission.schemeId,
+      username: reviewUser ? reviewUser.username : submission.userId,
+      status,
+      reason: status === 'rejected' ? rejectReason : undefined
+    });
     
     return res.status(200).json({
       success: true,
@@ -1139,6 +1171,18 @@ const approveSubmission = async (req, res) => {
     clearUserStatusCache(submission.userId);
     
     await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: 'approve', status: 'approved' });
+
+    const [approveUser, approveScheme] = await Promise.all([
+      User.findByPk(submission.userId, { attributes: ['username'] }),
+      KYCScheme.findByPk(submission.schemeId, { attributes: ['name'] })
+    ]);
+    notifyKycEvent({
+      event: '认证已通过',
+      submissionId: submission.id,
+      schemeName: approveScheme ? approveScheme.name : submission.schemeId,
+      username: approveUser ? approveUser.username : submission.userId,
+      status: 'approved'
+    });
     
     return res.status(200).json({
       success: true,
@@ -1198,6 +1242,19 @@ const rejectSubmission = async (req, res) => {
     clearUserStatusCache(submission.userId);
     
     await addReviewLog({ submissionId: submission.id, userId: submission.userId, reviewerId, action: 'reject', status: 'rejected', reason });
+
+    const [rejectUser, rejectScheme] = await Promise.all([
+      User.findByPk(submission.userId, { attributes: ['username'] }),
+      KYCScheme.findByPk(submission.schemeId, { attributes: ['name'] })
+    ]);
+    notifyKycEvent({
+      event: '认证已拒绝',
+      submissionId: submission.id,
+      schemeName: rejectScheme ? rejectScheme.name : submission.schemeId,
+      username: rejectUser ? rejectUser.username : submission.userId,
+      status: 'rejected',
+      reason
+    });
     
     return res.status(200).json({
       success: true,
