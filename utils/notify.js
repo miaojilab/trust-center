@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { buildKycPayload } = require('./notification-payload');
 
 /**
  * Group robot notifications for WeCom / Feishu.
@@ -52,15 +53,14 @@ function buildPayload(provider, text) {
   return { msgtype: 'text', text: { content: text } };
 }
 
-async function postWebhook(target, text) {
-  const payload = buildPayload(target.provider, text);
+async function postWebhook(target, payload) {
   try {
     const res = await axios.post(target.url, payload, {
       timeout: TIMEOUT_MS,
       headers: { 'Content-Type': 'application/json' },
       validateStatus: () => true,
     });
-    if (res.status >= 400) {
+    if (res.status < 200 || res.status >= 300) {
       console.error(`[notify] ${target.provider} HTTP ${res.status}`);
       return false;
     }
@@ -76,7 +76,9 @@ async function postWebhook(target, text) {
     }
     return true;
   } catch (err) {
-    console.error(`[notify] ${target.provider} failed:`, err.message);
+    // Axios error messages may contain the webhook URL; log only a known category.
+    const category = ['ECONNABORTED', 'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND'].includes(err.code) ? err.code : 'request_failed';
+    console.error(`[notify] ${target.provider} failed: ${category}`);
     return false;
   }
 }
@@ -91,29 +93,13 @@ function notifyText(text) {
   const targets = collectTargets();
   if (targets.length === 0) return Promise.resolve([]);
 
-  return Promise.all(targets.map((t) => postWebhook(t, message)));
+  return Promise.all(targets.map((t) => postWebhook(t, buildPayload(t.provider, message))));
 }
 
-function safe(value, fallback = '-') {
-  if (value === null || value === undefined || value === '') return fallback;
-  return String(value);
-}
-
-/**
- * KYC lifecycle notifications. Avoid including form field values / PII payloads.
- */
-function notifyKycEvent({ event, submissionId, schemeName, username, status, reason }) {
-  const lines = [
-    '【信任中心】',
-    `事件: ${safe(event)}`,
-    `提交ID: ${safe(submissionId)}`,
-    `方案: ${safe(schemeName)}`,
-    `用户: ${safe(username)}`,
-  ];
-  if (status) lines.push(`状态: ${safe(status)}`);
-  if (reason) lines.push(`备注: ${safe(reason).slice(0, 200)}`);
-  lines.push(`时间: ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`);
-  return notifyText(lines.join('\n'));
+/** KYC lifecycle notifications. Include only the existing event summary fields. */
+function notifyKycEvent(event) {
+  const targets = collectTargets();
+  return Promise.all(targets.map(t => postWebhook(t, buildKycPayload(t.provider, event))));
 }
 
 module.exports = {

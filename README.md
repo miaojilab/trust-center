@@ -109,6 +109,11 @@ npm start
 - `WECOM_WEBHOOK_URL`（可选）
 - `FEISHU_WEBHOOK_URL`（可选）
 - `NOTIFY_WEBHOOK_URLS`（可选，逗号分隔多个 webhook）
+- `WECOM_NOTIFY_FORMAT`：默认 `card`（企微模板卡片），可选 `markdown` / `text`
+- `FEISHU_NOTIFY_FORMAT`：默认 `card`（飞书消息卡片），可选 `text`
+- `NOTIFY_PUBLIC_BASE_URL`：通知跳转使用的公开站点地址，默认 `https://trust.emoera.com`
+
+认证通知展示方案、申请人、编号、中文状态和北京时间；如有审核备注则保留摘要。卡片提供“前往审核 / 查看记录”链接，跳转后仍需登录并通过管理员权限检查。消息只使用已配置的通知渠道，不会自动创建群或机器人。通用 `notifyText` 调用仍发送纯文本。网络超时不会自动补发，避免重复通知。
 
 前端 `client/.env`：
 
@@ -117,7 +122,7 @@ npm start
 - `REACT_APP_OAUTH_AUTHORIZATION_ENDPOINT`
 - `REACT_APP_API_BASE_URL`
 
-不要提交 `.env`、生产数据库密码、OAuth client secret、JWT secret、API keys 或群机器人 webhook。仓库只保留 `.env.example` 作为占位示例。通知消息仅包含事件类型、提交 ID、方案名和用户名，不包含表单字段内容。
+不要提交 `.env`、生产数据库密码、OAuth client secret、JWT secret、API keys 或群机器人 webhook。仓库只保留 `.env.example` 作为占位示例。通知消息仅包含事件摘要、提交 ID、方案名、用户名、状态及已有审核备注摘要，不包含表单字段内容。
 
 ## API 概览
 
@@ -155,3 +160,4 @@ npm start
 ## License
 
 本项目基于 [Apache License 2.0](./LICENSE) 开源。
+通知格式测试（不会发送真实消息）：`node --test tests/notify.test.js`。
