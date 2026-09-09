@@ -9,7 +9,7 @@ interface MobileSecurityAnimationProps {
 const MobileSecurityAnimation: React.FC<MobileSecurityAnimationProps> = ({
   width = 120,
   height = 120,
-  color = '#1976d2'
+  color = '#2563eb'
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
@@ -68,11 +68,11 @@ const MobileSecurityAnimation: React.FC<MobileSecurityAnimationProps> = ({
       centerX, centerY, radius * 0.3,
       centerX, centerY, radius
     );
-    gradient.addColorStop(0, `rgba(25, 118, 210, 0.9)`);
-    gradient.addColorStop(1, `rgba(25, 118, 210, 0.6)`);
+    gradient.addColorStop(0, `rgba(37, 99, 235, 0.9)`);
+    gradient.addColorStop(1, `rgba(37, 99, 235, 0.6)`);
     
     ctx.fillStyle = gradient;
-    ctx.shadowColor = 'rgba(25, 118, 210, 0.5)';
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.5)';
     ctx.shadowBlur = 10;
     ctx.fill();
     

@@ -9,7 +9,7 @@ interface SecurityShieldCanvasProps {
 const SecurityShieldCanvas: React.FC<SecurityShieldCanvasProps> = ({
   width = 280,
   height = 280,
-  color = '#1976d2'
+  color = '#2563eb'
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
@@ -45,12 +45,12 @@ const SecurityShieldCanvas: React.FC<SecurityShieldCanvasProps> = ({
       centerX + size * 0.4, 
       centerY
     );
-    gradient.addColorStop(0, 'rgba(25, 118, 210, 0.6)');
-    gradient.addColorStop(0.5, 'rgba(25, 118, 210, 0.9)');
-    gradient.addColorStop(1, 'rgba(25, 118, 210, 0.7)');
+    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.6)');
+    gradient.addColorStop(0.5, 'rgba(37, 99, 235, 0.9)');
+    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.7)');
     
     ctx.fillStyle = gradient;
-    ctx.shadowColor = 'rgba(25, 118, 210, 0.5)';
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.5)';
     ctx.shadowBlur = 20;
     ctx.fill();
     

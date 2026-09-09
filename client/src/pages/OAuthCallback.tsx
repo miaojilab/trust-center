@@ -85,7 +85,7 @@ const OAuthCallback: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: `linear-gradient(135deg, ${alpha('#e8f5fe', 0.9)} 0%, ${alpha('#bbdefb', 0.7)} 100%)`,
+        background: `linear-gradient(135deg, ${alpha('#eff6ff', 0.9)} 0%, ${alpha('#dbeafe', 0.7)} 100%)`,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

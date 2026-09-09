@@ -27,7 +27,7 @@
 /* 旋转动画 */
 .loading-spinner {
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
+  border-top: 3px solid #2563eb;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -95,6 +95,6 @@
   
   .loading-spinner {
     border-color: #333;
-    border-top-color: #3498db;
+    border-top-color: #2563eb;
   }
 }
