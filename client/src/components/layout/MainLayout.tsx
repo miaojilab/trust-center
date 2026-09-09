@@ -30,7 +30,7 @@ import {
   Assignment as AssignmentIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 // 定义props类型
@@ -219,6 +219,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [open, setOpen] = useState(!isMobile);
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [loadingPath, setLoadingPath] = useState<string | null>(null);
 
   // 监听窗口大小变化，在手机端自动收起侧栏
   useEffect(() => {
@@ -230,8 +232,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   const handleNavigation = (path: string) => {
-    navigate(path);
+    if (path === location.pathname) return;
+    setLoadingPath(path);
+    requestAnimationFrame(() => requestAnimationFrame(() => navigate(path)));
   };
+
+  useEffect(() => {
+    setLoadingPath(null);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -241,6 +249,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
+      {loadingPath && <Box className="trust-loading-bar" role="status" aria-live="polite" aria-label="正在加载页面"><span /></Box>}
       <AppBar position="absolute" open={open}>
         <Toolbar>
           <IconButton

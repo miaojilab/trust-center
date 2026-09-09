@@ -8,13 +8,13 @@ import './App.css';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#0d91a8',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#19a8c7',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f5f9fa',
     },
   },
   typography: {
