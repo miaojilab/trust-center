@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import PortalHeader from '../brand/PortalHeader';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -21,7 +21,6 @@ import {
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
-  Person as PersonIcon,
   VerifiedUser as VerifiedUserIcon,
   AssignmentTurnedIn as AssignmentTurnedInIcon,
   AdminPanelSettings as AdminIcon,
@@ -127,11 +126,11 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
       <List component="nav">
         {/* 用户菜单 */}
         <ListItem disablePadding>
-          <ListItemButton onClick={() => handleNavigation('/')}>
+          <ListItemButton onClick={() => handleNavigation('/dashboard')}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="首页" />
+            <ListItemText primary="个人工作台" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -245,6 +244,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     logout();
     navigate('/login');
   };
+
+  if (!location.pathname.startsWith('/admin')) {
+    return <div className="portal"><PortalHeader workspace/><main className="portal-workspace">{children}</main></div>;
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>

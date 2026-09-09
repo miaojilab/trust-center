@@ -1,10 +1,11 @@
 import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 
 // 懒加载页面组件
+const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const OAuthCallback = lazy(() => import('../pages/OAuthCallback'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
@@ -57,7 +58,7 @@ const AppRoutes: React.FC = () => {
           </Route>
           
           {/* 默认和错误路由 */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
