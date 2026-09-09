@@ -6,9 +6,9 @@ const theme = createTheme(
   {
     palette: {
       primary: {
-        main: '#2563eb',
-        light: '#60a5fa',
-        dark: '#1d4ed8',
+        main: '#315edb',
+        light: '#5b7ff0',
+        dark: '#1f4ed8',
       },
       secondary: {
         main: '#475569',
@@ -26,9 +26,9 @@ const theme = createTheme(
         dark: '#b45309',
       },
       info: {
-        main: '#2563eb',
-        light: '#60a5fa',
-        dark: '#1d4ed8',
+        main: '#315edb',
+        light: '#5b7ff0',
+        dark: '#1f4ed8',
       },
       success: {
         main: '#16805a',
@@ -36,7 +36,7 @@ const theme = createTheme(
         dark: '#116044',
       },
       background: {
-        default: '#f5f9fa',
+        default: '#f7f8fa',
         paper: '#ffffff',
       },
     },
